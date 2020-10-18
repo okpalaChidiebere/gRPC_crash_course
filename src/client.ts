@@ -26,7 +26,7 @@ async function main() {
     };
 
     //we passed null as the first argument, because, the RPC expects an empty argument as input but returns an array list
-    client.readTodos(null, (err: any, response: any) => {
+    /*client.readTodos(null, (err: any, response: any) => {
         if (err) {
             console.error(err);
             return;
@@ -35,7 +35,15 @@ async function main() {
         for (const item of response.items) { //you can loop through each itemrow from the response array and do whtever you want
             console.log(item.text);
         }
+    });*/
+
+    const call = client.readTodosStream(); //the call we get here will be a stream
+    //eventlistener for when we get a data from the stream
+    call.on("data", ( item: any )=> { 
+        console.log("received item from server " + JSON.stringify(item));
     });
+    //eventlistener for when the stream is done
+    call.on("end", () => console.log("server done!"))
 
     client.createTodo(todoItem, (err: any, response: any) => {
         if (err) {

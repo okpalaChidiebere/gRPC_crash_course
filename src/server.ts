@@ -33,10 +33,20 @@ const readTodos = async(call: any, callback: any) => {
     callback(null, {"items": todos});   
 }
 
+const readTodosStream = async(call: any, callback: any) => {
+    //You can stream however you want. You can make write and wait a mili second and write again. Cool stuffs!
+    
+    for (const todo of todos) {  //we stream each row in the array to the user one by one
+        call.write(todo);
+    }
+    call.end(); //this ends the communication between the client and server when it is done streaming the list
+}
+
 const server = new grpc.Server();
 server.addService(todoPackage.Todo.service, { //the method defined here will be mapped to our protoRPC, so for consistency reaso, the MUST be thesame name
     createTodo,
-    readTodos
+    readTodos,
+    readTodosStream
 });
 
 const port = process.env.PORT || 3000;
