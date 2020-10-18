@@ -15,7 +15,7 @@ const packageDef = protoLoader.loadSync(PROTO_PATH, {
 const grpcObject = grpc.loadPackageDefinition(packageDef) as any;
 const todoPackage = grpcObject.todoPackage;
 
-const todos = [];
+const todos: any = [];
 const createTodo = async(call: any, callback: any) => {
     /*The example here, when we get a task from the client, we increase the id by one and push to the array. 
     Ideally we do som database stuff like here https://gitlab.com/infoverload/grpc-server-client/-/tree/master*/
@@ -28,9 +28,15 @@ const createTodo = async(call: any, callback: any) => {
     console.log(call);
 }
 
+const readTodos = async(call: any, callback: any) => {
+    //FYI: we did not do anything with the call, because we don't exprect any parameter for this RPC
+    callback(null, {"items": todos});   
+}
+
 const server = new grpc.Server();
 server.addService(todoPackage.Todo.service, { //the method defined here will be mapped to our protoRPC, so for consistency reaso, the MUST be thesame name
-    createTodo
+    createTodo,
+    readTodos
 });
 
 const port = process.env.PORT || 3000;
