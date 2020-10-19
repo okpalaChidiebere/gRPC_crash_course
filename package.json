@@ -2,11 +2,15 @@
   "name": "grpc_crash_course",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "tsc": "tsc",
     "server": "ts-node-dev --respawn --transpile-only ./src/server.ts",
     "client": "ts-node ./src/client.ts",
+    "clean": "rm -rf www/ || true",
+    "build": "npm run clean && tsc && cp -rf src/proto www/proto",
+    "prod": "tsc && node ./www/server.js",
+    "prodClient": "node ./www/client.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
