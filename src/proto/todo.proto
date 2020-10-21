@@ -3,6 +3,7 @@ syntax = "proto3"; //latest protocol version
 package todoPackage; //we name this package so thatwe know it is a package that has multiple services
 
 import "google/protobuf/empty.proto";
+import "authService.proto";
 
 service Todo {
 
@@ -11,6 +12,9 @@ service Todo {
     //takes no parameter, but return a list of todos from our server
     rpc readTodos(google.protobuf.Empty) returns (TodoItems);
     rpc readTodosStream(google.protobuf.Empty) returns (stream TodoItem);
+    rpc Login(google.protobuf.Empty) returns (LoginResponse);
+    rpc AddPhoto (stream AddPhotoRequest) returns (AddPhotoResponse);
+
 
 }
 

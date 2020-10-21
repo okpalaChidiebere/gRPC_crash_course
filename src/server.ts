@@ -2,6 +2,7 @@ const PROTO_PATH = __dirname + '/proto/todo.proto';
 
 import * as protoLoader from '@grpc/proto-loader';
 import * as grpc from 'grpc';
+import fs from 'fs';
 
 /*The object parameter is a configuration where we specify how we want to treat a case-sensitive schema or how we want to treat long, etc  */
 const packageDef = protoLoader.loadSync(PROTO_PATH, {
@@ -42,11 +43,37 @@ const readTodosStream = async(call: any, callback: any) => {
     call.end(); //this ends the communication between the client and server when it is done streaming the list
 }
 
+//stream photo to employee. Processes the chunks of the image
+const addPhoto = async(call: any, callback: any) => {
+    const md = call.metadata.getMap();
+    for (let key in md) {
+        console.log(key, md[key]);
+    }
+    //buffers and add the pieces of the image
+    let result = Buffer.alloc(0);
+     call.on('data', (data: any) => {
+        result = Buffer.concat([result, data.data]);
+            console.log(`Message received with size ${data.data.length}`);
+     });
+    
+     //Returns the message informing if streaming was successful and inform size in bytes
+    call.on('end', function() {
+        console.log(`Total file size: ${result.length} bytes`);
+        //fs.writeFileSync("./tmp", result);
+        fs.writeFile('./tmp/logo.png', result, 'buffer', function(err){
+            if (err) throw err
+            console.log('File saved.');
+            callback(null, {isOk: true});
+        });
+    });
+}
+
 const server = new grpc.Server();
 server.addService(todoPackage.Todo.service, { //the method defined here will be mapped to our protoRPC, so for consistency reaso, the MUST be thesame name
     createTodo,
     readTodos,
-    readTodosStream
+    readTodosStream,
+    addPhoto
 });
 
 const port = process.env.PORT || 3000;

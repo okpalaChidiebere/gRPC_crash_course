@@ -1,0 +1,26 @@
+syntax = "proto3"; //latest protocol version
+
+package todoPackage; //we name this package so that we know it is a package that has import "google/protobuf/empty.proto";
+
+service AuthService{ //this service takes nothing but returns a jwt toke. ideally we will taken in username and password then generate jwt token 
+    rpc Login(google.protobuf.Empty) returns (LoginResponse);
+}
+
+/*message LoginRequest {
+     string username = 1; 
+     string password = 2;
+}*/
+
+message LoginResponse{ 
+    string acess_token = 1;
+}
+
+message AddPhotoRequest {
+    bytes data = 1;
+}
+
+message AddPhotoResponse {
+    bool isOk = 1;
+}
+
+/*Go ahead, download a jwt packaege, create a class that wi*/

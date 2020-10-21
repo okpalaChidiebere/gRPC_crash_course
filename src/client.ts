@@ -2,6 +2,7 @@ const PROTO_PATH = __dirname + '/proto/todo.proto';
 
 import * as protoLoader from '@grpc/proto-loader';
 import * as grpc from 'grpc';
+import fs from 'fs';
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
@@ -53,6 +54,30 @@ async function main() {
           console.log("Received from server " + JSON.stringify(response));
       
     });
+
+    addPhoto(client);
+
+    function addPhoto (client: any) {
+
+        const md = new grpc.Metadata();
+        md.add('badgenumber', '2080');
+        
+        //creates client to send stream message accross (Photo)
+        //return error if any or result if streaming is Ok
+        const call = client.addPhoto(md, function (err: any, result: any) {
+            console.log(result);
+        });
+        
+        //uses fs to read image file
+        const stream = fs.createReadStream(__dirname + '/Penguins.jpg');
+        //Chunk data to send it in different pieces
+        stream.on('data', (chunk: any) => {
+            call.write({data: chunk});
+        });
+        stream.on('end', function () {
+            call.end();
+        });
+    }
     
 }
 
